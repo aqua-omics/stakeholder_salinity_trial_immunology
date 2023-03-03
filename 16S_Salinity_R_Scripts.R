@@ -1,3 +1,5 @@
+###Please see Figure_Scripts_FiMS.R for actual scripts used for figures, those seen here are precursors that underwent adjustments for publication
+
 ###PREPPING YOUR R ENVIRONMENT###
 
 ##Set your working directory##
@@ -8,7 +10,7 @@
 getwd()
 
 #Use setwd() to set your working directory to whereever you want
-setwd("C:/Users/bradshawd/Documents/Bioinformatic_Analysis/LAB_salinity_trial/16S_R")
+setwd("C:/Users/dbrad/Documents/Bioinformatic_Analysis/LAB_salinity_trial/16S_R")
 
 #Rerun getwd() to check it worked
 getwd()
@@ -218,8 +220,6 @@ nsamples(Fdata) #Should be 194#
 
 ##Summarize sequences by ASVs (filtered and unfiltered)## 
 
-##TABLE M2
-
 #Unfiltered version first#
 
 #export table of sequence sums#
@@ -259,7 +259,7 @@ write.csv(data.frame("OTUID" =rownames(Comdata_seqs_per_sample), Comdata_seqs_pe
 
 ##Determine numbers of various taxonomic levels for all samples
 
-##TABLE M3
+##INFORMATION USED IN SUPPLEMENTARY TABLE 2
 
 Fdatataxa <- as.data.frame(tax_table(Fdata))
 
@@ -318,7 +318,7 @@ clipr::write_clip(T_Fdata_asv_tax_table)
 
 ##Determine numbers of various taxonomic levels for Water samples
 
-##TABLE M3
+##INFORMATION USED IN SUPPLEMENTARY TABLE 2
 
 W_Fdatataxa <- as.data.frame(tax_table(W_Fdata))
 
@@ -380,7 +380,7 @@ T_Fdatataxa%>%distinct(Kingdom, Phylum, Class, Order, Family, Genus, Species, .k
 
 ###Venn Diagrams###
 
-#Note: Although these venn diagrams were not used in the manuscript the information gained from them was
+#Note: Although some of these venn diagrams were not used in the manuscript the information gained from them was useful
 
 ##Generate Sample Type based Venn Diagrams
 #Extract out ASVs as a list from the asv table stored in phyloseq objects
@@ -479,7 +479,10 @@ tiff('Tissue ASV level Salinity venn diagram.tiff', units="in", width=10, height
 dev.off()
 
 
-#Genus level Salinity Venn Diagrams
+##Genus level Salinity Venn Diagrams
+
+#PRECURSOR TO SUPPLEMENTARY FIGURE 3
+#Water Genus Level Salinity Venn Diagram
 Genus_W_Fdata <- tax_glom(W_Fdata, taxrank = "Genus", NArm = FALSE)
 
 S10_Genus_W_Fdata <- subset_samples(Genus_W_Fdata, Salinity=="S10")
@@ -496,18 +499,21 @@ S30_Genus_W_Fdata <- filter_taxa(S30_Genus_W_Fdata, function(x) sum(x) >0, TRUE)
 water_S30_genera <- as.list(rownames(otu_table(S30_Genus_W_Fdata)))
 
 
-W_Salinities_Genera_Lists <- list('S10 (352)' = water_S10_genera,
-                           'S20 (365)' = water_S20_genera,
-                           'S30 (331)' = water_S30_genera)
+W_Salinities_Genera_Lists <- list('10 ppt (352)' = water_S10_genera,
+                                  '20 ppt (365)' = water_S20_genera,
+                                  '30 ppt (331)' = water_S30_genera)
 
-ggvenn(W_Salinities_Genera_Lists, fill_color = c("deeppink", "midnightblue", "blue"), show_percentage = FALSE)+
-  ggtitle("Water Genera by Salinity") +
+W_Genera_Salinity_Venn <- ggvenn(W_Salinities_Genera_Lists, fill_color = c("deeppink", "midnightblue", "blue"), show_percentage = FALSE)+
+  #ggtitle("Water Genera by Salinity") +
   theme(plot.title = element_text(hjust = 0.5))
+W_Genera_Salinity_Venn
 
-tiff('Water Genus level Salinity venn diagram.tiff', units="in", width=10, height=6, res=300)
-#plot
+tiff('Water Genera by Salinity Venn Diagram.tiff', units="in", width=6, height=6, res=300)
+W_Genera_Salinity_Venn
 dev.off()
 
+#PRECURSOR TO SUPPLEMENTARY FIGURE 6
+#Larvae Genus Level Salinity Venn Diagram
 Genus_T_Fdata <- tax_glom(T_Fdata, taxrank = "Genus", NArm = FALSE)
 
 S10_Genus_T_Fdata <- subset_samples(Genus_T_Fdata, Salinity=="S10")
@@ -523,16 +529,17 @@ S30_Genus_T_Fdata <- subset_samples(S30_Genus_T_Fdata, Tank_Number!="P0")
 S30_Genus_T_Fdata <- filter_taxa(S30_Genus_T_Fdata, function(x) sum(x) >0, TRUE)
 tissue_S30_genera <- as.list(rownames(otu_table(S30_Genus_T_Fdata)))
 
-T_Salinities_Genera_Lists <- list('S10 (668)' = tissue_S10_genera,
-                           'S20 (606)' = tissue_S20_genera,
-                           'S30 (675)' = tissue_S30_genera)
+T_Salinities_Genera_Lists <- list('10 ppt (668)' = tissue_S10_genera,
+                                  '20 ppt (606)' = tissue_S20_genera,
+                                  '30 ppt (675)' = tissue_S30_genera)
 
-ggvenn(T_Salinities_Genera_Lists, fill_color = c("deeppink", "midnightblue", "blue"), show_percentage = FALSE)+
-  ggtitle("Tissue Genera by Salinity") +
+T_Genera_Salinity_Venn <- ggvenn(T_Salinities_Genera_Lists, fill_color = c("deeppink", "midnightblue", "blue"), show_percentage = FALSE)+
+  #ggtitle("Tissue Genera by Salinity") +
   theme(plot.title = element_text(hjust = 0.5))
+T_Genera_Salinity_Venn
 
-tiff('Tissue Genera level Salinity venn diagram.tiff', units="in", width=10, height=6, res=300)
-#plot
+tiff('Larvae Genera by Salinity Venn Diagram.tiff', units="in", width=6, height=6, res=300)
+T_Genera_Salinity_Venn
 dev.off()
 
 ###ALPHA DIVERSITY###
@@ -639,7 +646,7 @@ ggplot(Falphadiv_no0D1D_metadata, aes(x=Sample_Type, y=Shannon, color=Salinity))
 ##Kruskal-Wallis: Non-parametric test for overall significance##
 #Use IF not normally distributed per Shapiro#
 
-##TABLE 4
+##INFORMATION USED IN SUPPLEMENTARY TABLE 3
 
 kruskal.test(Shannon ~ Sample_Type, data = Falphadiv_no0D1D_metadata)
 
@@ -749,7 +756,7 @@ dunnTest(Shannon ~ Salinity, data = filter(T_Falphadiv_metadata, Days_Post_Hatch
 
 ###COMBINING STATISTICAL AND ALPHA DIVERSITY TESTING###
 
-##FIGURE 4
+##PRECURSOR TO FIGURE 2
 
 #Water by DPH
 W_Shannon_DPH_no_stats_boxplot <- ggplot(W_Falphadiv_metadata, aes(x=Days_Post_Hatch, y=Shannon)) + 
@@ -780,7 +787,7 @@ W_Shannon_DPH_no_stats_boxplot
 dev.off()
 
 
-##FIGURE 8
+##PRECURSOR TO FIGURE 5
 
 #Tissue by DPH
 T_Shannon_DPH_boxplot_no_stats_title <- ggplot(T_Falphadiv_metadata, aes(x=Days_Post_Hatch, y=Shannon)) + 
@@ -806,7 +813,7 @@ T_Shannon_DPH_boxplot_no_stats_title <- ggplot(T_Falphadiv_metadata, aes(x=Days_
   annotate("text", x=8.125, y=6.625, label="Microfeeds", size=5, color ="purple")
 T_Shannon_DPH_boxplot_no_stats_title
 
-tiff('Figure 8 - Tissue Shannon Diversity by Days Post Hatch.tiff', units="in", width=10, height=6, res=300)
+tiff('Tissue Shannon Diversity by Days Post Hatch.tiff', units="in", width=10, height=6, res=300)
 T_Shannon_DPH_boxplot_no_stats_title
 dev.off()
 
@@ -944,7 +951,7 @@ hist(sample_sums(MGS_Fdata))
 
 ##Export ASV and  table for PRIMER7##
 
-##TABLE 5
+##INFORMATION USED IN SUPPLEMENTARY TABLE 4 AND 5
 
 # Extract abundance matrix from the phyloseq object#
 LAB_Salinity_ZDS_Fdata_Bio = as(otu_table(ZDS_Fdata), "matrix")
@@ -1031,7 +1038,7 @@ nsamples(TW_18D_Fdata) #32
 TW_24D_Fdata = subset_samples(ZDS_Fdata, Days_Post_Hatch=="D24")
 nsamples(TW_24D_Fdata) #28
 
-##FIGURE 1
+##PRECURSOR TO SUPPLEMENTARY FIGURE 2
 
 #Overall Sample Type PCoA
 plot_ordination(ZDS_Fdata, ordinate(ZDS_Fdata, "PCoA", "bray"), color = "Sample_Type")+ 
@@ -1049,7 +1056,7 @@ nsamples(W_ZDS_Fdata)#125
 W_noD1_ZDS_Fdata <- subset_samples(W_ZDS_Fdata, Days_Post_Hatch != "D1")
 nsamples(W_noD1_ZDS_Fdata) #99
 
-##FIGURE 4
+##PRECURSOR TO FIGURE 3
 
 #Water PCoA without 1 DPH samples
 plot_ordination(W_noD1_ZDS_Fdata, ordinate(W_noD1_ZDS_Fdata, "PCoA", "bray"), color = "Days_Post_Hatch", shape = "Salinity") + 
@@ -1069,6 +1076,8 @@ nsamples(T_ZDS_Fdata)#69
 T_noD01_ZDS_Fdata <- subset_samples(T_ZDS_Fdata, Days_Post_Hatch != "D0")
 T_noD01_ZDS_Fdata <- subset_samples(T_noD01_ZDS_Fdata, Days_Post_Hatch != "D1")
 nsamples(T_noD01_ZDS_Fdata) #66
+
+#PRECURSOR TO FIGURE 6
 
 # Tissue PCoA without 0 & 1 DPH samples
 plot_ordination(T_noD01_ZDS_Fdata, ordinate(T_noD01_ZDS_Fdata, "PCoA", "bray"), color = "Days_Post_Hatch", shape = "Salinity") + 
@@ -1151,7 +1160,7 @@ dat <- subset(dat, select=c(Sample_Type, Abundance, Genus))
 #combine with original table
 Genus_noD01_Fdata_Sample_Type <- rbind(dat, Abundance)
 
-##FIGURE 2
+##PRECURSOR TO FIGURE 1
 
 spatial_plot_Genus_noD01_Fdata_Sample_Type <- ggplot(data=Genus_noD01_Fdata_Sample_Type, aes(x=Sample_Type, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1204,7 +1213,7 @@ dat <- subset(dat, select=c(Salinity, Abundance, Genus))
 #combine with original table
 Genus_W_noD1_Fdata_Salinity <- rbind(dat, Abundance)
 
-##FIGURE 5
+##PRECURSOR TO SUPPLEMENTARY FIGURE 4
 
 #Water by Salinity
 spatial_plot_Genus_NoD1_W_Fdata_Salinity <- ggplot(data=Genus_W_noD1_Fdata_Salinity, aes(x=Salinity, y=Abundance, fill=Genus)) +
@@ -1258,7 +1267,7 @@ dat <- subset(dat, select=c(Salinity, Abundance, Genus))
 #combine with original table
 Genus_T_noD01_Fdata_Salinity <- rbind(dat, Abundance)
 
-##FIGURE 10
+##PRECURSOR TO SUPPLEMTNARY FIGURE 7
 
 #Tissue by Salinity
 spatial_plot_Genus_T_noD01_Fdata_Salinity <- ggplot(data=Genus_T_noD01_Fdata_Salinity, aes(x=Salinity, y=Abundance, fill=Genus)) +
@@ -1283,9 +1292,9 @@ dev.off()
 ##Sample Type
 #Switch the structure of dataframe from long to wide
 #i.e. summarize by expanding a column (here Sample_Type) into its subcategories (here Water adn Tissue) and places abundances in each column
-#This makes a dataframe that is 34 rows by 3 columns to on that is 17 rows by 3 columns
+#This makes a dataframe that is 28 rows by 3 columns to on that is 14 rows by 3 columns
 #Typically this creates a dataframe that is longer because there are more than two subcategories (hence wide)
-wide_Genus_noD01_Fdata_Sample_Type <- spread(Genus_Fdata_Sample_Type, Sample_Type, Abundance) 
+wide_Genus_noD01_Fdata_Sample_Type <- spread(Genus_noD01_Fdata_Sample_Type, Sample_Type, Abundance) 
 
 #Add a new column that is the Tissue abundance of a particular genera divided by the Water abundance of that same genera
 wide_Genus_noD01_Fdata_Sample_Type$TW <- wide_Genus_noD01_Fdata_Sample_Type$Tissue / wide_Genus_noD01_Fdata_Sample_Type$Water 
@@ -1319,7 +1328,7 @@ wide_Genus_W_noD1_Fdata_Salinity$S30S20 <- wide_Genus_W_noD1_Fdata_Salinity$S30 
 
 ##Tissue by Salinity
 #Switch the structure of dataframe from long to wide
-wide_Genus_T_noD01_Fdata_Salinity <- spread(Genus_T_noD01_Fdata_Salinity, Salinity, Abundance) 
+wide_Genus_T_noD01_Fdata_Salinity <- spread(Full_Genus_T_noD1_Salinity_dat, Salinity, Abundance) 
 
 #Add a new column that is the 10 ppt abundance of a particular genera divided by the 20 ppt abundance of that same genera
 wide_Genus_T_noD01_Fdata_Salinity$S10S20 <- wide_Genus_T_noD01_Fdata_Salinity$S10 / wide_Genus_T_noD01_Fdata_Salinity$S20 
@@ -1373,7 +1382,7 @@ Full_Genus_W_noD1_Salinity_dat <- rbind(dat)
 #Keep only PPG
 PPFG_Full_Genus_W_noD1_Salinity_dat <- Full_Genus_W_noD1_Salinity_dat[Full_Genus_W_noD1_Salinity_dat$Genus %in% PPFG,]
 
-##FIGURE 6B
+##PRECURSOR TO FIGURE 4B
 
 spatial_plot_PPFG_Full_Genus_W_noD1_Salinity <- ggplot(data=PPFG_Full_Genus_W_noD1_Salinity_dat, aes(x=Salinity, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1419,7 +1428,7 @@ Full_Genus_W_Days_Post_Hatch_dat <- rbind(dat)
 #Keep only the PPG 
 PPFG_Full_Genus_W_Days_Post_Hatch_dat <- Full_Genus_W_Days_Post_Hatch_dat[Full_Genus_W_Days_Post_Hatch_dat$Genus %in% PPFG,]
 
-##FIGURE 6D
+##PRECURSOR TO FIGURE 4D
 
 spatial_plot_PPFG_Full_Genus_W_DPH <- ggplot(data=PPFG_Full_Genus_W_Days_Post_Hatch_dat, aes(x=Days_Post_Hatch, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1467,7 +1476,7 @@ Full_Genus_T_noD1_Salinity_dat <- rbind(dat)
 #Keep only PPG
 PPFG_Full_Genus_T_noD1_Salinity_dat <- Full_Genus_T_noD1_Salinity_dat[Full_Genus_T_noD1_Salinity_dat$Genus %in% PPFG,]
 
-##FIGURE 11B
+##PRECURSOR TO FIGURE 7B
 
 spatial_plot_PPFG_Full_Genus_T_noD1_Salinity <- ggplot(data=PPFG_Full_Genus_T_noD1_Salinity_dat, aes(x=Salinity, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1513,7 +1522,7 @@ Full_Genus_T_Days_Post_Hatch_dat <- rbind(dat)
 #Keep only PPG
 PPFG_Full_Genus_T_Days_Post_Hatch_dat <- Full_Genus_T_Days_Post_Hatch_dat[Full_Genus_T_Days_Post_Hatch_dat$Genus %in% PPFG,]
 
-##FIGURE 11D
+##PRECURSOR TO FIGURE 7D
 
 spatial_plot_PPFG_Full_Genus_T_DPH <- ggplot(data=PPFG_Full_Genus_T_Days_Post_Hatch_dat, aes(x=Days_Post_Hatch, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1535,7 +1544,7 @@ dev.off()
 
 ##Create series of tables to use for testing
 
-##TABLE 4
+##INFORMATION USED IN SUPPLEMENTARY TABLE 3
 
 # agglomerate taxa
 glom <- tax_glom(phy, taxrank = 'Genus')
@@ -1589,7 +1598,7 @@ dunnTest(sum_PPG ~ Salinity, data = W_noD1_PPG_dat, method="bh")
 # 2  S10 - S30 6.494876 8.310199e-11 2.493060e-10
 # 3  S20 - S30 1.347227 1.779071e-01 1.779071e-01
 
-##FIGURE 6A
+##PRECURSOR TO FIGURE 4A
 
 ggplot(W_noD1_PPG_dat, aes(x=Salinity, y=sum_PPG, color=Salinity)) +   geom_boxplot() +
   theme(axis.text.x  = element_text(angle=45, hjust=1)) + scale_color_manual("Salinity", values=c("deeppink", "midnightblue", "blue"))+
@@ -1614,7 +1623,7 @@ dunnTest(sum_PPG ~ Salinity, data = T_noD01_PPG_dat, method="bh")
 # 2  S10 - S30 -0.3133920 0.7539829 0.7539829
 # 3  S20 - S30  0.5416908 0.5880315 0.8820473
 
-##FIGURE 11A
+##PRECURSOR TO FIGURE 7A
 
 ggplot(T_noD01_PPG_dat, aes(x=Salinity, y=sum_PPG, color=Salinity)) +   geom_boxplot() +
   theme(axis.text.x  = element_text(angle=45, hjust=1)) + scale_color_manual("Salinity", values=c("deeppink", "midnightblue", "blue"))+
@@ -1655,7 +1664,7 @@ cldList(comparison = Dunn$Comparison,
 # 3   D24      a         a 
 # 4    D6      b          b
 
-##FIGURE 6C
+##PRECURSOR TO FIGURE 4C
 
 ggplot(W_PPG_dat, aes(x=Days_Post_Hatch, y=sum_PPG, color=Days_Post_Hatch)) +   geom_boxplot() +
   theme(axis.text.x  = element_text(angle=45, hjust=1)) + scale_color_manual("Days Post Hatch", values=c("black", "red", "forestgreen", "purple", "orange"), limits=c("D1", "D6", "D12","D18", "D24"))+
@@ -1722,7 +1731,7 @@ cldList(comparison = Dunn$Comparison,
 # 7    D6    abc       abc 
 # 8    D9      c         c 
 
-##FIGURE 11C
+##PRECURSOR TO FIGURE 7C
 
 ggplot(T_PPG_dat, aes(x=Days_Post_Hatch, y=sum_PPG, color=Days_Post_Hatch)) +   geom_boxplot() +
   theme(axis.text.x  = element_text(angle=45, hjust=1)) + 
@@ -1775,7 +1784,7 @@ Full_Genus_W_Days_Post_Hatch_Salinity_dat <- rbind(dat)
 #Keep only PPG
 PPFG_Full_Genus_W_Days_Post_Hatch_Salinity_dat <- Full_Genus_W_Days_Post_Hatch_Salinity_dat[Full_Genus_W_Days_Post_Hatch_Salinity_dat$Genus %in% PPFG,]
 
-##FIGURE 7
+##PRECURSOR TO SUPPLEMENTARY FIGURE 5
 
 spatial_plot_PPFG_Full_Genus_W_DPH_Salinity <- ggplot(data=PPFG_Full_Genus_W_Days_Post_Hatch_Salinity_dat, aes(x=Days_Post_Hatch_Salinity, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
@@ -1823,7 +1832,7 @@ Full_Genus_T_Days_Post_Hatch_Salinity_dat <- rbind(dat)
 #Keep only PPG
 PPFG_Full_Genus_T_Days_Post_Hatch_Salinity_dat <- Full_Genus_T_Days_Post_Hatch_Salinity_dat[Full_Genus_T_Days_Post_Hatch_Salinity_dat$Genus %in% PPFG,]
 
-##FIGURE 12
+##PRECURSOR TO SUPPLEMENTARY FIGURE 8
 
 spatial_plot_PPFG_Full_Genus_T_DPH_Salinity <- ggplot(data=PPFG_Full_Genus_T_Days_Post_Hatch_Salinity_dat, aes(x=Days_Post_Hatch_Salinity, y=Abundance, fill=Genus)) +
   geom_bar(aes(), stat="identity", position="stack", color="black") + 
